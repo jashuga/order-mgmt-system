@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    stock INTEGER NOT NULL,
+    price REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time TEXT NOT NULL,
+    name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    order_detail TEXT NOT NULL,
+    status TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    price REAL NOT NULL
+);
+

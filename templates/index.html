@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
+</head>
+<body>
+    <!-- Navigation Bar for Main Actions -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Bakery Order Management System</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#orderModal">
+                            Add Order
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#productModal">
+                            Edit Product List
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#exportModal">
+                            Export/Import Database
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#reminderModal">
+                            Set Reminders
+                        </button>
+                    </li>                      
+                    <li class="nav-item">
+                        <button type="button" id="deleteSelected" class="btn btn-danger me-2">
+                            Delete Selected
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container with Adjusted Width -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-12">
+                <table id="example" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" aria-label="Select All Orders"></th>
+                            <th>Time</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Order</th>
+                            <th>Status</th>
+                            <th>Quantity</th>
+                            <th>Price (¥)</th>   
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Orders will be dynamically populated here -->
+                    </tbody
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export/Import Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export/Import Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Select an export format:</p>
+                    <button id="exportXlsx" class="btn btn-primary w-100 mb-2">Export as .xlsx</button>
+                    <button id="exportCsv" class="btn btn-secondary w-100">Export as .csv</button>
+                    <hr>
+                    <p>Import from a .csv file:</p>
+                    <input type="file" id="importFile" accept=".csv" class="form-control mb-2">
+                    <button id="importCsv" class="btn btn-success w-100">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Reminder Modal -->
+    <div class="modal fade" id="reminderModal" tabindex="-1" aria-labelledby="reminderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reminderModalLabel">Set Reminders</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reminderForm">
+                        <div class="mb-3">
+                            <label for="manualTime" class="form-label">Set Manual Reminder Time (HH:MM)</label>
+                            <input type="time" class="form-control" id="manualTime" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="autoReminder">
+                            <label for="autoReminder" class="form-check-label">Enable Auto Reminder for Undelivered Orders</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderModalLabel">New Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="orderForm">
+                        <input type="hidden" id="orderId">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" placeholder="Enter customer name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <select id="countryCode" class="form-select">
+                                        <option value="+81" selected>+81 (Japan)</option>
+                                        <option value="+91">+91 (India)</option>
+                                        <option value="+1">+1 (USA)</option>
+                                        <option value="+61">+61 (Australia)</option>
+                                    </select>
+                                </span>
+                                <input type="text" class="form-control" id="phone" placeholder="Enter phone number" required>
+                            </div>
+                        </div>  
+                        <div class="mb-3">
+                            <label for="order" class="form-label">Order</label>
+                            <select class="form-control" id="order" required aria-label="Select product order">
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control" id="status" required aria-label="Select order status">
+                                <option value="pending">Pending</option>
+                                <option value="complete">Complete</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" placeholder="Enter quantity" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Edit Product List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="productName" placeholder="Enter product name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="productStock" placeholder="Enter stock quantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productPrice" class="form-label">Price (¥)</label>
+                            <input type="number" class="form-control" id="productPrice" placeholder="Enter price" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </form>
+                    <hr>
+                    <h5>Product List</h5>
+                    <!-- Product Table -->
+                    <table id="productTable" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Stock</th>
+                                <th>Price (¥)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
+    <script type="text/javascript" src="../static/app.js"></script>
+</body>
+</html>
