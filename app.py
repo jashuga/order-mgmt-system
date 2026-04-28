@@ -9,8 +9,8 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from io import BytesIO
 
-account_sid = 'ACc1d5924f326a59a4a5fa20c367b680eb'
-auth_token = 'e5311612703a9e45c5a2ffaeea99ce4b'
+account_sid = ''
+auth_token = ''
 client = Client(account_sid, auth_token) 
 
 app = Flask(__name__)
@@ -85,8 +85,8 @@ def send_auto_reminder():
         
         client.messages.create(
             body=message_body,
-            from_='whatsapp:+14155238886',
-            to='whatsapp:+819034208719'
+            from_='whatsapp:',
+            to='whatsapp:'
         )
 
 @app.route("/export_xlsx", methods=["GET"])
